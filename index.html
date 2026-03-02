@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Complete (Module 2 + Module 3)</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>
+            <i class="fas fa-bolt"></i>
+            <span>TalentLink</span>
+        </h2>
+        
+        <div class="nav-item active" onclick="switchMainModule('dashboard')">
+            <i class="fas fa-dashboard"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="switchMainModule('verification')">
+            <i class="fas fa-user-check"></i>
+            <span>Verification</span>
+            <span class="badge" id="pendingVerificationBadge">6</span>
+        </div>
+        <div class="nav-item" onclick="switchMainModule('contracts')">
+            <i class="fas fa-file-contract"></i>
+            <span>Contracts</span>
+            <span class="badge" id="disputeBadge">8</span>
+        </div>
+        <div class="nav-item" onclick="switchMainModule('reviews')">
+            <i class="fas fa-star"></i>
+            <span>Reviews</span>
+            <span class="badge" id="flaggedBadge">3</span>
+        </div>
+        <div class="nav-item" onclick="switchMainModule('disputes')">
+            <i class="fas fa-gavel"></i>
+            <span>Disputes</span>
+        </div>
+        <div class="nav-item" onclick="switchMainModule('analytics')">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 id="pageTitle">Admin Dashboard</h1>
+            <div class="admin-profile">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="admin-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards - Always Visible -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="filterByType('all')">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalUsers">248</div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-trend trend-up">↑ 28 this month</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('pending')">
+                <div class="stat-icon">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="stat-value" id="pendingUsers">6</div>
+                <div class="stat-label">Pending Verification</div>
+                <div class="stat-trend trend-down">Need approval</div>
+            </div>
+            <div class="stat-card" onclick="filterByStatus('active')">
+                <div class="stat-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="stat-value" id="totalContracts">47</div>
+                <div class="stat-label">Active Contracts</div>
+                <div class="stat-trend">32 active</div>
+            </div>
+            <div class="stat-card" onclick="showFlaggedReviews()">
+                <div class="stat-icon">
+                    <i class="fas fa-flag" style="color: #f59e0b;"></i>
+                </div>
+                <div class="stat-value" id="flaggedReviewsCount">3</div>
+                <div class="stat-label">Flagged Reviews</div>
+                <div class="stat-trend trend-down">Need moderation</div>
+            </div>
+        </div>
+
+        <!-- Module Tabs -->
+        <div class="module-tabs">
+            <div class="module-tab active" onclick="switchModule('overview')">
+                <i class="fas fa-home"></i>
+                <span>Overview</span>
+            </div>
+            <div class="module-tab" onclick="switchModule('verification')">
+                <i class="fas fa-user-check"></i>
+                <span>User Verification</span>
+            </div>
+            <div class="module-tab" onclick="switchModule('contracts')">
+                <i class="fas fa-file-contract"></i>
+                <span>Contract Oversight</span>
+            </div>
+            <div class="module-tab" onclick="switchModule('reviews')">
+                <i class="fas fa-star"></i>
+                <span>Review Monitoring</span>
+            </div>
+        </div>
+
+        <!-- MODULE 2: User Verification Section (Default) -->
+        <div id="module2Content">
+            <!-- Section Tabs -->
+            <div class="section-tabs">
+                <div class="section-tab active" onclick="switchSection('verification')">Pending Verification</div>
+                <div class="section-tab" onclick="switchSection('demand')">Client Demand Overview</div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="userSearch" placeholder="Search users by name, email, skills..." onkeyup="searchUsers()">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterUserRole('all')">All</button>
+                    <button class="filter-btn" onclick="filterUserRole('client')">Clients</button>
+                    <button class="filter-btn" onclick="filterUserRole('freelancer')">Freelancers</button>
+                </div>
+            </div>
+
+            <!-- Pending Verification Table -->
+            <div id="verificationSection">
+                <div class="table-container">
+                    <table id="unverifiedTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Skills</th>
+                                <th>Hourly Rate</th>
+                                <th>Availability</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unverifiedTableBody">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Client Demand Section -->
+            <div id="demandSection" style="display: none;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Projects Posted</th>
+                                <th>Proposals Received</th>
+                                <th>Demand Status</th>
+                                <th>Avg Budget</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demandTableBody">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 3: Contracts & Reviews Section (Hidden by default) -->
+        <div id="module3Content" style="display: none;">
+            <!-- Section Tabs -->
+            <div class="section-tabs">
+                <div class="section-tab active" onclick="switchContractTab('contracts')">All Contracts</div>
+                <div class="section-tab" onclick="switchContractTab('disputes')">Dispute Resolution</div>
+                <div class="section-tab" onclick="switchContractTab('reviews')">All Reviews</div>
+                <div class="section-tab" onclick="switchContractTab('flagged')">Flagged Content</div>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="contractSearch" placeholder="Search contracts..." onkeyup="searchContracts()">
+                </div>
+                <div class="filter-group">
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="disputed">Disputed</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                    <select class="filter-select" id="dateFilter" onchange="applyFilters()">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Contracts List Section -->
+            <div id="contractsListSection">
+                <div class="table-container">
+                    <table id="contractsTable">
+                        <thead>
+                            <tr>
+                                <th>Contract ID</th>
+                                <th>Project</th>
+                                <th>Client</th>
+                                <th>Freelancer</th>
+                                <th>Value</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractsTableBody">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Disputes List Section -->
+            <div id="disputesListSection" style="display: none;">
+                <div id="disputesList">
+                    <!-- Disputes will be populated -->
+                </div>
+            </div>
+
+            <!-- Reviews Grid Section -->
+            <div id="reviewsListSection" style="display: none;">
+                <div class="reviews-grid" id="reviewsGrid">
+                    <!-- Reviews will be populated -->
+                </div>
+            </div>
+
+            <!-- Flagged Content Section -->
+            <div id="flaggedListSection" style="display: none;">
+                <div class="reviews-grid" id="flaggedGrid">
+                    <!-- Flagged reviews will be populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Profile Details</h3>
+                <button class="close-modal" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="profileModalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Contract Messages</h3>
+                <button class="close-modal" onclick="closeModal('messageModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="messageThread">
+                <!-- Messages will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Dispute Modal -->
+    <div class="modal" id="disputeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Dispute Resolution</h3>
+                <button class="close-modal" onclick="closeModal('disputeModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="disputeModalBody">
+                <!-- Dispute details -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js">
+
+    </script>
+</body>
+</html>
